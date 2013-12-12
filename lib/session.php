@@ -4,6 +4,15 @@ require_once "config.php";
 require_once "lib/render.php";
 require_once "Auth/OpenID/Server.php";
 
+/**
+ * Get the style markup
+ */
+function getStyle()
+{
+    $parent = rtrim(dirname(getServerURL()), '/');
+    $url = htmlspecialchars($parent . '/openid-server.css', ENT_QUOTES);
+    return sprintf('<link rel="stylesheet" type="text/css" href="%s" />', $url);
+}
 
 /**
  * Get the URL of the current script
@@ -135,9 +144,6 @@ function idURL($identity)
 
 function idFromURL($url)
 {
-	if (strpos($url, 'idpage') === false) {
-		return null;
-	}
 
 	$a = get_app();
 	$url = str_replace($a->get_baseurl()."/", "",$url);

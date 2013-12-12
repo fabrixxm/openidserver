@@ -31,9 +31,6 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 	function FriendicaStore($associations_table = null,
 								  $nonces_table = null)
 	{
-		global $db;
-		
-		$this->connection = $db;
 		
 		$this->associations_table_name = "oid_associations";
 		$this->nonces_table_name = "oid_nonces";
@@ -88,7 +85,8 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 	 */
 	function resultToBool()
 	{
-		return $this->connection->error == false;
+		global $db;
+		return $db->error == false;
 	}
 
 	/**
@@ -292,9 +290,9 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 					$association->assoc_type
 		);
 		if ($this->resultToBool()) {
-			// TODO: $this->connection->commit();
+			// TODO: $db->commit();
 		} else {
-			// TODO: $this->connection->rollback();
+			// TODO: $db->rollback();
 		}
 	}
 
@@ -328,9 +326,9 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 
 		$r = q($this->sql['remove_assoc'], dbesc($server_url), dbesc($handle));
 		if ($this->resultToBool()) {
-			// TODO: $this->connection->commit();
+			// TODO: $db->commit();
 		} else {
-			// TODO: $this->connection->rollback();
+			// TODO: $db->rollback();
 		}
 
 		return true;
@@ -398,9 +396,9 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 		$sql = $this->sql['add_nonce'];
 		$result = $q($sql, dbesc($server_url),intval($timestamp), dbesc($salt));
 		if ($this->resultToBool()) {
-			// TODO: $this->connection->rollback();
+			// TODO: $db->rollback();
 		} else {
-			// TODO:$this->connection->commit();
+			// TODO:$db->commit();
 		}
 		return $this->resultToBool();
 	}

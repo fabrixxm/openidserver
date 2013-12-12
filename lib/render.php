@@ -1,5 +1,21 @@
 <?php
 
+define('page_template',
+'<html>
+  <head>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <title>%s</title>
+%s
+  </head>
+  <body>
+    %s
+<div id="content">
+    <h1>%s</h1>
+    %s
+</div>
+  </body>
+</html>');
 
 define('logged_in_pat', 'You are logged in as %s (URL: %s)');
 
@@ -47,16 +63,52 @@ function redirect_render($redir_url)
     return array($headers, $body);
 }
 
-
+function navigation_render($msg, $items)
+{
+    $what = link_render(buildURL(), 'PHP OpenID Server');
+    if ($msg) {
+        $what .= ' &mdash; ' . $msg;
+    }
+    if ($items) {
+        $s = '<p>' . $what . '</p><ul class="bottom">';
+        foreach ($items as $action => $text) {
+            $url = buildURL($action);
+            $s .= sprintf('<li>%s</li>', link_render($url, $text));
+        }
+        $s .= '</ul>';
+    } else {
+        $s = '<p class="bottom">' . $what . '</p>';
+    }
+    return sprintf('<div class="navigation">%s</div>', $s);
+}
 
 /**
  * Render an HTML page
  */
-function page_render($body, $user=null, $title=null, $h1=null, $login=false)
+function page_render($body, $user, $title, $h1=null, $login=false)
 {
+    $h1 = $h1 ? $h1 : $title;
+
+    if ($user) {
+        $msg = sprintf(logged_in_pat, link_render(idURL($user), $user),
+                       link_render(idURL($user)));
+        $nav = array('logout' => 'Log Out');
+
+        $navigation = navigation_render($msg, $nav);
+    } else {
+        if (!$login) {
+            $msg = link_render(buildURL('login'), 'Log In');
+            $navigation = navigation_render($msg, array());
+        } else {
+            $navigation = '';
+        }
+    }
+
+    $style = getStyle();
+    $text = sprintf(page_template, $title, $style, $navigation, $h1, $body);
     // No special headers here
     $headers = array();
-    return array($headers, $body);
+    return array($headers, $text);
 }
 
 ?>

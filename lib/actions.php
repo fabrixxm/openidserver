@@ -139,10 +139,9 @@ function action_login()
  */
 function action_trust()
 {
-	$info = getRequestInfo();
-	$trusted = isset($_POST['trust']);
-	$rt = doAuth($info, $trusted, true, @$_POST['idSelect']);
-	return $rt;
+    $info = getRequestInfo();
+    $trusted = isset($_POST['trust']);
+    return doAuth($info, $trusted, true, @$_POST['idSelect']);
 }
 
 function action_idpage()

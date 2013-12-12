@@ -11,18 +11,10 @@
  * @copyright 2013 Fabio Comuni
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache
  */
-define("Auth_OpenID_RAND_SOURCE", null);
-define("OpenIDServer_plugin_root", dirname(__file__));
 
+set_include_path( dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
 
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
-$server_url = "";
-require_once 'FriendicaStore.php';
-
-function getOpenIDStore(){
-	$s = new FriendicaStore();
-	return $s;
-}
+require_once 'config.php';
 
 
 function openidserver_install(){
@@ -70,10 +62,13 @@ function openidserver_content(&$a) {
 	require_once 'lib/session.php';
 	require_once 'lib/actions.php';
 
-	if ($_REQUEST['openid_mode']=="checkid_setup" &&
-		$_REQUEST['openid_claimed_id']!=idURL($a->user['nickname'])) {
-			return(t('Errore, cicci!'));
-	}
+#	if ($_REQUEST['openid_mode']=="checkid_setup" &&
+#		$_REQUEST['openid_claimed_id']!=idURL($a->user['nickname'])) {
+#			echo "<pre>";
+#			var_dump("mode",$_REQUEST['openid_mode']);
+#			var_dump("claimed_id",$_REQUEST['openid_claimed_id']);
+#			var_dump("nickname",$a->user['nickname']);
+#	}
 	
 
 
@@ -86,13 +81,13 @@ function openidserver_content(&$a) {
 
 	$a->page['htmlhead'] .= '<meta http-equiv="cache-control" content="no-cache"/>';
 	$a->page['htmlhead'] .= '<meta http-equiv="pragma" content="no-cache"/>"';
-	return writeResponse($resp);
-	
+	echo writeResponse($resp);
+	killme();
 }
 
 function openidserver_get_data($server, $req_url) {
 	return array(
-		/*'fullname' => 'Example User',
+		'fullname' => 'Example User',
 		'nickname' => 'example',
 		'dob' => '1970-01-01',
 		'email' => 'invalid@example.com',
@@ -100,6 +95,7 @@ function openidserver_get_data($server, $req_url) {
 		'postcode' => '12345',
 		'country' => 'ES',
 		'language' => 'eu',
-		'timezone' => 'America/New_York'*/
+		'timezone' => 'America/New_York'
 	);
 }
+
