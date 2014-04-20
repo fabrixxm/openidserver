@@ -11,7 +11,7 @@
  * @copyright 2013 Fabio Comuni
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache
  */
-
+define("OPENIDSERVER_PLUGIN_PATH",dirname(__FILE__));
 set_include_path( dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
 
 require_once 'config.php';
@@ -44,58 +44,35 @@ function openidserver_content(&$a) {
 	global $server_url;
 	$server_url = $a->get_baseurl()."/openidserver";
 	
-	
 	header('Cache-Control: no-cache');
 	header('Pragma: no-cache');
-
-	if (!local_user()){
-		$hiddens = array();
-		foreach ($_REQUEST as $key=>$value) {
-			if (substr($key,0,7)=="openid_") $hiddens[$key]=$value;
-		}
-		return login(($a->config['register_policy'] == REGISTER_CLOSED) ? false : true, $hiddens);
-
-	}
-	
-	#echo "<pre>"; var_dump($_REQUEST); killme();
-
+    
 	require_once 'lib/session.php';
 	require_once 'lib/actions.php';
-
-#	if ($_REQUEST['openid_mode']=="checkid_setup" &&
-#		$_REQUEST['openid_claimed_id']!=idURL($a->user['nickname'])) {
-#			echo "<pre>";
-#			var_dump("mode",$_REQUEST['openid_mode']);
-#			var_dump("claimed_id",$_REQUEST['openid_claimed_id']);
-#			var_dump("nickname",$a->user['nickname']);
-#	}
 	
-
-
 	$action = getAction();
 	if (!function_exists($action)) {
 		$action = 'action_default';
-	}
-
+    }
 	$resp = $action();
-
 	$a->page['htmlhead'] .= '<meta http-equiv="cache-control" content="no-cache"/>';
 	$a->page['htmlhead'] .= '<meta http-equiv="pragma" content="no-cache"/>"';
-	echo writeResponse($resp);
-	killme();
+	$a->page['content'] = writeResponse($resp);
+    return;
 }
 
 function openidserver_get_data($server, $req_url) {
+    $a = get_app();
 	return array(
-		'fullname' => 'Example User',
-		'nickname' => 'example',
-		'dob' => '1970-01-01',
-		'email' => 'invalid@example.com',
-		'gender' => 'F',
-		'postcode' => '12345',
-		'country' => 'ES',
-		'language' => 'eu',
-		'timezone' => 'America/New_York'
+		'fullname' => $a->user['username'],
+		'nickname' => $a->user['nickname'],
+		'dob' => $a->contact['db'],
+		'email' => $a->user['email'],
+		#'gender' => 'F',
+		#'postcode' => '12345',
+		#'country' => 'ES',
+		'language' => $a->user['language'],
+		'timezone' => $a->user['timezone']
 	);
 }
 

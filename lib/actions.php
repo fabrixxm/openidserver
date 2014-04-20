@@ -18,6 +18,8 @@ function action_default()
 {
     header('X-XRDS-Location: '.buildURL('idpXrds'));
 
+    logger("action_default", LOGGER_DEBUG);
+    
     $server = getServer();
     $method = $_SERVER['REQUEST_METHOD'];
     $request = null;
@@ -28,8 +30,9 @@ function action_default()
     }
 
     $request = $server->decodeRequest();
-
+    
     if (!$request) {
+        logger("not request", LOGGER_DEBUG);
         return about_render();
     }
 
@@ -74,8 +77,8 @@ function action_default()
     }
 
     header(header_connection_close);
-    print $webresponse->body;
-    exit(0);
+    return $webresponse->body;
+    //exit(0);
 }
 
 /**

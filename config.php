@@ -1,6 +1,6 @@
 <?php
 
-define("Auth_OpenID_RAND_SOURCE", null);
+//define("Auth_OpenID_RAND_SOURCE", null);
 define("OpenIDServer_plugin_root", dirname(__file__));
 
 

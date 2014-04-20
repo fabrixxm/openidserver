@@ -3,19 +3,6 @@
 require_once "lib/session.php";
 require_once "lib/render.php";
 
-define('trust_form_pat',
-       '<div class="form">
-  <form method="post" action="%s">
-  %s
-    <input type="submit" name="trust" value="Confirm" />
-    <input type="submit" value="Do not confirm" />
-  </form>
-</div>
-');
-
-define('normal_pat',
-       '<p>Do you wish to confirm your identity ' .
-       '(<code>%s</code>) with <code>%s</code>?</p>');
 
 define('id_select_pat',
        '<p>You entered the server URL at the RP.
@@ -33,24 +20,32 @@ Please return to the relying party and try again.
 function trust_render($info)
 {
     $current_user = getLoggedInUser();
-    $lnk = link_render(idURL($current_user));
+    $lnk = idURL($current_user);
     $trust_root = htmlspecialchars($info->trust_root);
     $trust_url = buildURL('trust', true);
 
     if ($info->idSelect()) {
         $prompt = id_select_pat;
     } else {
-        $prompt = sprintf(normal_pat, $lnk, $trust_root);
+        $prompt = sprintf(t('Do you wish to confirm your identity (<tt>%s</tt>) with <tt>%s</tt>'), $lnk, $trust_root);
     }
 
-    $form = sprintf(trust_form_pat, $trust_url, $prompt);
-
-    return page_render($form, $current_user, 'Trust This Site');
+    $tpl = get_markup_template("trust.html",OPENIDSERVER_PLUGIN_PATH);
+    $o = replace_macros($tpl, array(
+        "lnk" => $lnk,
+        "trust_root" => $trust_root,
+        "trust_url" => $trust_url,
+        "prompt" => $prompt,
+        "confirm" => t("Confirm"),
+        "noconfirm" => t("Do not confirm"),
+    ));
+                          
+    return page_render($o, $current_user, t('Trust This Site'));
 }
 
 function noIdentifier_render()
 {
-    return page_render(no_id_pat, null, 'No Identifier Sent');
+    return page_render(no_id_pat, null, t('No Identifier Sent'));
 }
 
 ?>

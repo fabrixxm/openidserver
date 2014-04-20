@@ -31,7 +31,7 @@ class FriendicaStore extends Auth_OpenID_OpenIDStore {
 	function FriendicaStore($associations_table = null,
 								  $nonces_table = null)
 	{
-		
+		logger("FriendicaStore", LOGGER_DEBUG);
 		$this->associations_table_name = "oid_associations";
 		$this->nonces_table_name = "oid_nonces";
 

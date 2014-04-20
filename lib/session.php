@@ -28,11 +28,11 @@ function getServerURL()
  */
 function buildURL($action=null, $escaped=true)
 {
-	$url = getServerURL();
-	if ($action) {
-		$url .= '/' . $action;
-	}
-	return $escaped ? htmlspecialchars($url, ENT_QUOTES) : $url;
+    $url = getServerURL();
+    if ($action) {
+        $url .= '/' . $action;
+    }
+    return $escaped ? htmlspecialchars($url, ENT_QUOTES) : $url;
 }
 
 /**
@@ -40,9 +40,9 @@ function buildURL($action=null, $escaped=true)
  */
 function getAction()
 {
-	$a = get_app();
-	$action = $a->argv[1];
-	$function_name = 'action_' . $action;
+    $a = get_app();
+    $action = $a->argv[1];
+    $function_name = 'action_' . $action;
 	return $function_name;
 }
 
@@ -51,10 +51,15 @@ function getAction()
  */
 function writeResponse($resp)
 {
-	list ($headers, $body) = $resp;
-	array_walk($headers, 'header');
-	header(header_connection_close);
-	return $body;
+    if (is_array($resp)){
+        list ($headers, $body) = $resp;
+        logger("headers: $headers, body: $body", LOGGER_DEBUG);
+        array_walk($headers, 'header');
+    } else {
+        $body = $resp;
+    }
+    header(header_connection_close);
+    return $body;
 }
 
 /**
@@ -62,12 +67,12 @@ function writeResponse($resp)
  */
 function getServer()
 {
-	static $server = null;
-	if (!isset($server)) {
-		$server = new Auth_OpenID_Server(getOpenIDStore(),
-										 buildURL());
-	}
-	return $server;
+    static $server = null;
+    if (!isset($server)) {
+        $server = new Auth_OpenID_Server(getOpenIDStore(),
+                                         buildURL());
+    }
+    return $server;
 }
 
 /**
@@ -75,7 +80,7 @@ function getServer()
  */
 function hashPassword($password)
 {
-	return bin2hex(Auth_OpenID_SHA1($password));
+    return bin2hex(Auth_OpenID_SHA1($password));
 }
 
 /**
@@ -86,9 +91,10 @@ function hashPassword($password)
  */
 function getLoggedInUser()
 {
-	global $a;
-	if (!local_user()) return false;
-	return $a->user['nickname'];
+    $a = get_app();
+    return local_user()
+        ? $a->get_baseurl()."/profile/".$a->user['nickname']
+        : false;
 }
 
 /**
@@ -108,38 +114,39 @@ function setLoggedInUser($identity_url=null)
 
 function getRequestInfo()
 {
-	return isset($_SESSION['request'])
-		? unserialize($_SESSION['request'])
-		: false;
+    return isset($_SESSION['request'])
+        ? unserialize($_SESSION['request'])
+        : false;
 }
 
 function setRequestInfo($info=null)
 {
-	if (!isset($info)) {
-		unset($_SESSION['request']);
-	} else {
-		$_SESSION['request'] = serialize($info);
-	}
+    if (!isset($info)) {
+        unset($_SESSION['request']);
+    } else {
+        $_SESSION['request'] = serialize($info);
+    }
 }
 
 
 function getSreg($identity)
 {
-	// from config.php
-	global $openid_sreg;
+    // from config.php
+    global $openid_sreg;
 
-	if (!is_array($openid_sreg)) {
-		return null;
-	}
+    if (!is_array($openid_sreg)) {
+        return null;
+    }
 
-	return $openid_sreg[$identity];
+    return $openid_sreg[$identity];
 
 }
 
 function idURL($identity)
 {
-	$a = get_app();
-	return $a->get_baseurl()."/profile/".$identity;
+    logger("identity: $identity", LOGGER_DEBUG);
+	// $identity seems to be === to URL.. dunno why..
+	return $identity;
 }
 
 function idFromURL($url)
