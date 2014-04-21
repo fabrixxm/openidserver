@@ -61,9 +61,9 @@ function openidserver_content(&$a) {
     return;
 }
 
-function openidserver_get_data($server, $req_url) {
+function openidserver_get_data($fields) {
     $a = get_app();
-	return array(
+	$data = array(
 		'fullname' => $a->user['username'],
 		'nickname' => $a->user['nickname'],
 		'dob' => $a->contact['db'],
@@ -74,5 +74,10 @@ function openidserver_get_data($server, $req_url) {
 		'language' => $a->user['language'],
 		'timezone' => $a->user['timezone']
 	);
+	$ret = array();
+	foreach($fields as $name){
+		$ret[$name] = $data[$name];
+	}
+	return $ret;
 }
 

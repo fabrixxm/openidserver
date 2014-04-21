@@ -29,7 +29,11 @@ function trust_render($info)
     } else {
         $prompt = sprintf(t('Do you wish to confirm your identity (<tt>%s</tt>) with <tt>%s</tt>'), $lnk, $trust_root);
     }
-
+	
+	/* get optional sreg fields */
+	$sreg_fields = $info->message->getArgs('http://openid.net/extensions/sreg/1.1');
+	$optfields=explode(",",$sreg_fields['optional']);
+	
     $tpl = get_markup_template("trust.html",OPENIDSERVER_PLUGIN_PATH);
     $o = replace_macros($tpl, array(
         "lnk" => $lnk,
@@ -38,6 +42,7 @@ function trust_render($info)
         "prompt" => $prompt,
         "confirm" => t("Confirm"),
         "noconfirm" => t("Do not confirm"),
+		"extra" => openidserver_get_data($optfields),
     ));
                           
     return page_render($o, $current_user, t('Trust This Site'));

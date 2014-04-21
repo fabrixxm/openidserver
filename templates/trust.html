@@ -2,6 +2,10 @@
 <div class="form">
 	<form method="post" action="{{$trust_url}}">
 		<p>{{$prompt}}</p>
+		
+		{{foreach $extra as $n=>$v}}
+			<div><label><input name="{{$n}}" type="checkbox">{{$n}} ({{$v}})</label></div>
+		{{/foreach}}
 		<input type="submit" name="trust" value="{{$confirm}}" />
 		<input type="submit" value="{{$noconfirm}}" />
 	</form>

@@ -54,7 +54,18 @@ function doAuth($info, $trusted=null, $fail_cancels=false,
         $response = $info->answer(true, null, $req_url);
 
         // Answer with some sample Simple Registration data.
-        $sreg_data = openidserver_get_data($server, $req_url);
+		$sreg_fields = $info->message->getArgs('http://openid.net/extensions/sreg/1.1');
+		$opt_fields = explode(",",$sreg_fields['optional']);
+		$fields = explode(",", $sreg_fields['required']);
+		/*foreach($opt_fields as $name){
+			echo $name."\n";
+			if (isset($_REQUEST[$name]))
+				$fields[] = $name;
+		}*/
+		$fields = array_merge($fields,$opt_fields);
+		logger("get data for ". print_r($fields,true), LOGGER_DEBUG);
+	    $sreg_data = openidserver_get_data($fields);
+		logger("data: ". print_r($sreg_data, true), LOGGER_DATA);
 
         // Add the simple registration response values to the OpenID
         // response message.

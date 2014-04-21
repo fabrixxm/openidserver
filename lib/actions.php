@@ -8,6 +8,7 @@ require_once "lib/render/login.php";
 require_once "lib/render/idpage.php";
 require_once "lib/render/idpXrds.php";
 require_once "lib/render/userXrds.php";
+require_once "lib/render/wronguser.php";
 
 require_once "Auth/OpenID.php";
 
@@ -59,6 +60,14 @@ function action_default()
             if (!getLoggedInUser()) {
                 return login_render();
             }
+			
+			if ($request->identity!==getLoggedInUser()){
+				logger("openidserver: claimed_id: ".$request->claimed_id. " , getLoggedInUser(): ".getLoggedInUser(), LOGGER_DEBUG);
+				logger("request: ". print_r($request,true), LOGGER_DATA);
+				// the current logged in user is not the owner of claimed id
+				return wronguser_render();
+			}
+			
             return trust_render($request);
         }
     } else {
