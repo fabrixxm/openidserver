@@ -70,6 +70,7 @@ function openidserver_content(&$a) {
 }
 
 function openidserver_get_data($fields) {
+	logger("fields: ".print_r($fields,true), LOGGER_DATA);
     $a = get_app();
 	$data = array(
 		'fullname' => $a->user['username'],
@@ -86,6 +87,7 @@ function openidserver_get_data($fields) {
 	foreach($fields as $name){
 		$ret[$name] = $data[$name];
 	}
+	logger("fields data: ".print_r($ret,true), LOGGER_DATA);
 	return $ret;
 }
 
