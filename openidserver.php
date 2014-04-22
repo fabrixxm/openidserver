@@ -43,7 +43,7 @@ function openidserver_hook(&$a, $b){
 function openidserver_content(&$a) {
 	global $server_url;
 	$server_url = $a->get_baseurl()."/openidserver";
-	
+	logger("argv: ".implode($a->argv,","), LOGGER_DATA);
 	header('Cache-Control: no-cache');
 	header('Pragma: no-cache');
     
@@ -54,11 +54,19 @@ function openidserver_content(&$a) {
 	if (!function_exists($action)) {
 		$action = 'action_default';
     }
+	logger("action: ".$action, LOGGER_DEBUG);
 	$resp = $action();
+	logger("response: ".$resp, LOGGER_DATA);
 	$a->page['htmlhead'] .= '<meta http-equiv="cache-control" content="no-cache"/>';
 	$a->page['htmlhead'] .= '<meta http-equiv="pragma" content="no-cache"/>"';
-	$a->page['content'] = writeResponse($resp);
-    return;
+	$content = writeResponse($resp);
+	if (is_array($resp)){
+		$a->page['content'] = $content;
+		return;
+	} else {
+		echo $content;
+		killme();
+	}
 }
 
 function openidserver_get_data($fields) {
